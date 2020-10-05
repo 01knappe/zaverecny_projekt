@@ -15,6 +15,7 @@ Cílem projektu je vytvořit digitální hodiny ze sedmi segmentů. U hodin bude
   <li>https://github.com/leonvandenbeukel/7-Segment-Digital-Clock</li>
   <li>https://github.com/leonvandenbeukel/7-Segment-Digital-Clock-V2</li>
   <li>https://github.com/esp8266/Arduino/tree/master/libraries/esp8266/examples</li>
+  <li>https://www.electronicshub.org/ws2812b-addressable-leds/</li>
 </ul>
 
 ## Postup
