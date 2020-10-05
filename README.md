@@ -14,6 +14,7 @@ Cílem projektu je vytvořit digitální hodiny ze sedmi segmentů. U hodin bude
   <li>https://github.com/leoclee/7-segment-clock</li>
   <li>https://github.com/leonvandenbeukel/7-Segment-Digital-Clock</li>
   <li>https://github.com/leonvandenbeukel/7-Segment-Digital-Clock-V2</li>
+  <li>https://github.com/esp8266/Arduino/tree/master/libraries/esp8266/examples</li>
 </ul>
 
 ## Postup
