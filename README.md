@@ -15,3 +15,11 @@ Cílem projektu je vytvořit digitální hodiny ze sedmi segmentů. U hodin bude
   <li>https://github.com/leonvandenbeukel/7-Segment-Digital-Clock</li>
   <li>https://github.com/leonvandenbeukel/7-Segment-Digital-Clock-V2</li>
 </ul>
+
+## Postup
+* Začít shánět potřebné věci k projektu.
+* Zjistit, jak jednotlivé hardwarové součástky fungují (začít si hledat užitečné knihovny).
+* Zprovoznit platformio.
+* Naučit se pracovat v KiCadu.
+* Začít programovat první jednotlivé funkce.
+* Dolaďovat program, přidávat další funkce.
