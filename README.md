@@ -1,4 +1,4 @@
-# Závěrečný projekt - zámek dveří
+# Závěrečný projekt
 
 Cílem projektu je vytvořit zámek dveří, který se bude otevírat pomocí čtečky otisků prstů. Při rozpoznání otisku se zámek otevře a pošle email/zprávu.
 
