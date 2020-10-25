@@ -11,8 +11,6 @@ NTPClient timeClient(ntpUDP, "europe.pool.ntp.org");
 
 void setup() {
   Serial.begin(115200);
-
-
   Serial.print("Pripojovani k ");
   Serial.println(ssid);
   WiFi.begin(ssid, password);
@@ -23,14 +21,18 @@ void setup() {
 
   timeClient.begin();  
 
-  //GMT +2 (2 * 60 * 60 = 7200)
-  timeClient.setTimeOffset(7200);
+  //GMT +1 (1 * 60 * 60 = 3600)
+  timeClient.setTimeOffset(3600);
 }
 
 void loop() {
   timeClient.update();
   String formattedTime = timeClient.getFormattedTime();
+  int hour = timeClient.getHours();
+  int minute = timeClient.getMinutes();
   Serial.print("Cas: ");
-  Serial.println(formattedTime);  
+  Serial.println(formattedTime);
+  Serial.println(hour);
+  Serial.println(minute);  
   delay(2000);
 }
