@@ -3,6 +3,7 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 #include <FastLED.h>
+#include <ESPAsyncWebServer.h>
 
 #define NUM_LEDS 7    
 #define DATA_PIN D6
@@ -12,7 +13,7 @@ CRGB color = CRGB::Red;
 const char *ssid     = "ssid";
 const char *password = "password";
 
-
+AsyncWebServer server(80);
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "europe.pool.ntp.org");
 
@@ -25,14 +26,21 @@ void setup() {
     delay(500);
     Serial.print(".");
   }
+  Serial.println(WiFi.localIP());
+
+  server.on("/html", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(200, "text/plain", "test");
+  });
 
   timeClient.begin();  
+  
 
   //GMT +1 (1 * 60 * 60 = 3600)
   timeClient.setTimeOffset(3600);
 
   FastLED.delay(3000);
   FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
+  server.begin();
 }
 
 void loop() {
@@ -46,6 +54,7 @@ void loop() {
   Serial.println(minute);  
   delay(2000);
 
+//test ledek
   for (int i = 0; i <= 6; i++) {
     leds[i] = CRGB ( 0, 0, 255);
     FastLED.show();
