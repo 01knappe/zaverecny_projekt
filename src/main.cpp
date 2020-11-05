@@ -17,6 +17,12 @@ AsyncWebServer server(80);
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "europe.pool.ntp.org");
 
+String getTime() {
+  String time = timeClient.getFormattedTime();
+  Serial.println(time);
+  return String(time);
+}
+
 void setup() {
   Serial.begin(115200);
   Serial.print("Pripojovani k ");
@@ -26,10 +32,20 @@ void setup() {
     delay(500);
     Serial.print(".");
   }
+
+  if(!SPIFFS.begin()){
+    Serial.println("An Error has occurred while mounting SPIFFS");
+    return;
+  } 
+
   Serial.println(WiFi.localIP());
 
-  server.on("/html", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(200, "text/plain", "test");
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/index.html", String());
+  });
+
+  server.on("/time", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/plain", getTime().c_str());
   });
 
   timeClient.begin();  
