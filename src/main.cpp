@@ -4,6 +4,7 @@
 #include <WiFiUdp.h>
 #include <FastLED.h>
 #include <ESPAsyncWebServer.h>
+#include <ESPAsyncTCP.h>
 
 #define NUM_LEDS 7    
 #define DATA_PIN D6
@@ -16,6 +17,8 @@ const char *password = "password";
 AsyncWebServer server(80);
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "europe.pool.ntp.org");
+
+byte brightness = 255;
 
 String getTime() {
   String time = timeClient.getFormattedTime();
@@ -48,6 +51,11 @@ void setup() {
     request->send_P(200, "text/plain", getTime().c_str());
   });
 
+  server.on("/brightness", HTTP_POST, [](AsyncWebServerRequest *request) {    
+    brightness = request->arg("brightness").toInt();    
+    request->send_P(200, "text/json", "{\"result\":\"ok\"}");
+  });
+
   timeClient.begin();  
   
 
@@ -69,7 +77,8 @@ void loop() {
   Serial.println(hour);
   Serial.println(minute);  
   delay(2000);
-
+  
+  FastLED.setBrightness(brightness);
 //test ledek
   for (int i = 0; i <= 6; i++) {
     leds[i] = CRGB ( 0, 0, 255);
