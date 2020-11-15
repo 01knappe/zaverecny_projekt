@@ -13,7 +13,7 @@
   </head>
   <body>
       <header class="jumbotron jumbotron-fluid bg-primary">
-        <div class="container test-center">
+        <div class="center">
           <h1 class="text-white display-2" id="time">%TIME%</h1>
         </div>
       </header>
@@ -35,9 +35,9 @@
                   <label for="rangeBrightness">Jas</label>
                   <input name="input1" action="/get" type="range" class="form-control-range" class="brightness" id="rangeBrightness" min="10"
                     max="255" value="255">
-                  <p>Hodnota jasu:
+                  <!--<p>Hodnota jasu:
                     <span id="demo"></span>
-                  </p>
+                  </p>-->
                 </div>
                 <button type="button" class="btn btn-primary" onclick="setBrightness()">Button</button>
               </div>
@@ -57,30 +57,4 @@
     <script src="/jquery.minicolors.min.js"></script>
     <script src="/index.js"></script>
   </body>
-  <script>
-    setInterval(function () {
-      var xhttp = new XMLHttpRequest();
-      xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-          document.getElementById("time").innerHTML = this.responseText;
-        }
-      };
-      xhttp.open("GET", "/time", true);
-      xhttp.send();
-    }, 1000);
-  
-    function setBrightness() {
-      var jas = $('#rangeBrightness').val();
-      console.log(jas);
-      $.post("/brightness", { brightness: jas });
-      }
-  
-      var brightness = document.getElementById("rangeBrightness");
-      var output = document.getElementById("demo");
-      output.innerHTML = brightness.value;
-  
-      brightness.oninput = function() {
-        output.innerHTML = this.value;
-      }
-  </script>
 </html>

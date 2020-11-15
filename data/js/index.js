@@ -14,13 +14,13 @@ function setColor() {
     $.post("/color", color);
 }
 
-var brightness = document.getElementById("rangeBrightness");
+/*var brightness = document.getElementById("rangeBrightness");
       var output = document.getElementById("demo");
       output.innerHTML = brightness.value;
   
       brightness.oninput = function() {
         output.innerHTML = this.value;
-      }
+      }*/
 
 function setBrightness() {
     var jas = $('#rangeBrightness').val();

@@ -11,15 +11,15 @@
 #define NUM_LEDS 30    
 #define DATA_PIN D6
 CRGB leds[NUM_LEDS];
-//CRGB color = CRGB::Red; 
-byte r_val = 255;
+CRGB color = CRGB::Red; 
+byte r_val = 0;
 byte g_val = 0;
 byte b_val = 0;
 
-CRGB color = CRGB(r_val, g_val, b_val);
+//CRGB color = CRGB(r_val, g_val, b_val);
 
-const char *ssid     = "Knappe_Home";
-const char *password = "Odysea1347";
+const char *ssid     = "ssid";
+const char *password = "password";
 
 AsyncWebServer server(80);
 WiFiUDP ntpUDP;
@@ -31,6 +31,47 @@ String getTime() {
   String time = timeClient.getFormattedTime();
   Serial.println(time);
   return String(time);
+}
+
+void displayTime(int index, int number) {
+
+  byte numbers[] = {
+    0b00111111, //0    
+    0b00000110, //1
+    0b01011011, //2
+    0b01001111, //3
+    0b01100110, //4
+    0b01101101, //5
+    0b01111101, //6
+    0b00000111, //7
+    0b01111111, //8
+    0b01101111, //9   
+  };
+  
+  color = CRGB(r_val,g_val,b_val);
+  for (int i = 0; i < 7; i++) {
+    leds[i + index] = ((numbers[number] & 1 << i) == 1 << i) ? color : CRGB::Black;
+  }
+
+  //tecky  
+  leds[14] = color;
+  leds[15] = color;
+}
+
+void updateClock(){
+
+  int hour1 = timeClient.getHours() / 10;
+  int hour2 = timeClient.getHours() % 10;
+  int minute1 = timeClient.getMinutes() / 10;
+  int minute2 = timeClient.getMinutes() % 10;
+
+  CRGB color = CRGB(r_val, g_val, b_val);
+
+  displayTime(0, minute2);    
+  displayTime(7, minute1);
+  displayTime(16, hour2);    
+  displayTime(23, hour1);
+
 }
 
 void setup() {
@@ -111,17 +152,8 @@ void loop() {
   Serial.println(hour);
   Serial.println(minute);  
   delay(2000);
-  
+
+  updateClock();
+  FastLED.show();  
   FastLED.setBrightness(brightness);
-//test ledek
-  for (int i = 0; i <= 29; i++) {
-    leds[i] = CRGB ( 0, 0, 255);
-    FastLED.show();
-    delay(40);
-  }
-  for (int i = 29; i >= 0; i--) {
-    leds[i] = CRGB(r_val, g_val, b_val);
-    FastLED.show();
-    delay(40);
-  }
 }
