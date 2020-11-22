@@ -15,6 +15,7 @@ CRGB color = CRGB::Red;
 byte r_val = 0;
 byte g_val = 0;
 byte b_val = 0;
+bool dotOn = true;
 
 //CRGB color = CRGB(r_val, g_val, b_val);
 
@@ -31,6 +32,19 @@ String getTime() {
   String time = timeClient.getFormattedTime();
   Serial.println(time);
   return String(time);
+}
+
+void displayDots(CRGB color) {
+  if (dotOn) {
+    leds[14] = color;
+    leds[15] = color;
+  } 
+  else {
+    leds[14] = CRGB::Black;
+    leds[15] = CRGB::Black;
+  }
+
+  dotOn = !dotOn;  
 }
 
 void displayTime(int index, int number) {
@@ -54,8 +68,9 @@ void displayTime(int index, int number) {
   }
 
   //tecky  
-  leds[14] = color;
-  leds[15] = color;
+  /*leds[14] = color;
+  leds[15] = color;*/
+  displayDots(color);  
 }
 
 void updateClock(){
@@ -154,6 +169,7 @@ void loop() {
   delay(2000);
 
   updateClock();
+  displayDots(color);
   FastLED.show();  
   FastLED.setBrightness(brightness);
 }

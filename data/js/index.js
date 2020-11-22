@@ -10,8 +10,10 @@ $(document).ready(function () {
 
 function setColor() {
     var color = $('#inline').minicolors('rgbObject');
+    var pcolor = $('#inline').minicolors('rgbString');
     console.log(color);
     $.post("/color", color);
+    $(".change").css("background", pcolor);
 }
 
 /*var brightness = document.getElementById("rangeBrightness");

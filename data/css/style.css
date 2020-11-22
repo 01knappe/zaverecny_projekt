@@ -5,3 +5,7 @@ hr.new1 {
 .center{
   text-align: center;
 }
+
+.change{
+  background-color: rgb(0, 119, 255);
+}
