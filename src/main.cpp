@@ -55,6 +55,11 @@ void displayDots(CRGB color) {
   dotOn = !dotOn;  
 }
 
+void dotsOff(){
+    leds[14] = CRGB::Black;
+    leds[15] = CRGB::Black;
+}
+
 void displayTime(int index, int number) {
 
   byte numbers[] = {
@@ -107,7 +112,7 @@ void updateTemperature(){
   displayTime(7,degreeSymbol);
   displayTime(16,teplota2);
   displayTime(23,teplota1);
-  
+  dotsOff();  
 }
 
 void setup() {
