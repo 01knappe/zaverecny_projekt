@@ -16,6 +16,9 @@ byte r_val = 0;
 byte g_val = 0;
 byte b_val = 0;
 bool dotOn = true;
+byte mode = 0;
+byte temperatureSymbol = 10;
+byte degreeSymbol = 11;
 
 //CRGB color = CRGB(r_val, g_val, b_val);
 
@@ -32,6 +35,11 @@ String getTime() {
   String time = timeClient.getFormattedTime();
   Serial.println(time);
   return String(time);
+}
+
+String getTemperature(){
+  int teplota = 5;
+  return String (teplota);
 }
 
 void displayDots(CRGB color) {
@@ -60,6 +68,8 @@ void displayTime(int index, int number) {
     0b00000111, //7
     0b01111111, //8
     0b01101111, //9   
+    0b00111001, //C
+    0b01100011, //°
   };
   
   color = CRGB(r_val,g_val,b_val);
@@ -69,8 +79,7 @@ void displayTime(int index, int number) {
 
   //tecky  
   /*leds[14] = color;
-  leds[15] = color;*/
-  displayDots(color);  
+  leds[15] = color;*/ 
 }
 
 void updateClock(){
@@ -86,7 +95,19 @@ void updateClock(){
   displayTime(7, minute1);
   displayTime(16, hour2);    
   displayTime(23, hour1);
+  displayDots(color);
 
+}
+
+void updateTemperature(){
+
+  int teplota1 = 1;
+  int teplota2 = 2;
+  displayTime(0,temperatureSymbol);
+  displayTime(7,degreeSymbol);
+  displayTime(16,teplota2);
+  displayTime(23,teplota1);
+  
 }
 
 void setup() {
@@ -146,6 +167,21 @@ void setup() {
     request->send_P(200, "text/json", "{\"result\":\"ok\"}");
   });
 
+   server.on("/clock", HTTP_POST, [](AsyncWebServerRequest *request){
+    mode = 0;  
+    request->send(200, "text/json", "{\"result\":\"ok\"}");
+  });
+
+  server.on("/temperature", HTTP_POST, [](AsyncWebServerRequest *request){
+    mode = 1;  
+    request->send(200, "text/json", "{\"result\":\"ok\"}");
+  });
+
+  server.on("/teplota", HTTP_GET, [](AsyncWebServerRequest * request){
+    request->send_P(200, "text/plain", getTemperature().c_str());
+    //clockMode = 1;
+  });
+
   timeClient.begin();  
   
 
@@ -166,10 +202,17 @@ void loop() {
   Serial.println(formattedTime);
   Serial.println(hour);
   Serial.println(minute);  
+  Serial.println(mode);
   delay(2000);
 
-  updateClock();
-  displayDots(color);
-  FastLED.show();  
+  //updateClock();
+
+  if (mode == 0) {
+      updateClock();
+    } 
+  else if (mode == 1) {
+      updateTemperature();
+    } 
   FastLED.setBrightness(brightness);
+  FastLED.show();
 }

@@ -39,13 +39,36 @@
                     <span id="demo"></span>
                   </p>-->
                 </div>
-                <button type="button" class="btn btn-primary" onclick="setBrightness()">Button</button>
+                <button type="button" class="btn btn-primary" onclick="setBrightness()">Update</button>
               </div>
             </div>
             <br/>
           </div>
         </div>
-        <hr class="change">
+        <button type="button" class="btn btn-secondary" onclick="showClock()">Hodiny</button>
+        <hr class="change">       
+        <p></p>
+        <table class="table table-hover tabulka">
+          <thead>
+            <tr>
+              <th>DHT11 Senzor</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>temperature</td>
+              <td id="teplota"></td>
+              <td><button type="button" class="btn btn-primary change" onclick="showTemperature()">Show</button></td>
+            </tr>
+            <tr>
+              <td>humidity</td>
+              <td>Value</td>
+              <td><button type="button" class="btn btn-primary change">Show</button></td>
+            </tr>
+          </tbody>
+        </table>
       </main>
       <footer>
         <div class="container">

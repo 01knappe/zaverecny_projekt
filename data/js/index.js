@@ -30,6 +30,14 @@ function setBrightness() {
     $.post("/brightness", { brightness: jas });
 }
 
+function showClock() {
+    $.post("/clock");
+}
+
+function showTemperature() {
+    $.post("/temperature");
+}
+
 setInterval(function () {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
@@ -40,6 +48,18 @@ setInterval(function () {
     xhttp.open("GET", "/time", true);
     xhttp.send();
   }, 1000);
+
+
+setInterval(function () {
+var xhttp = new XMLHttpRequest();
+xhttp.onreadystatechange = function () {
+    if (this.readyState == 4 && this.status == 200) {
+    document.getElementById("teplota").innerHTML = this.responseText;
+    }
+};
+xhttp.open("GET", "/teplota", true);
+xhttp.send();
+}, 2000);
 
 
 
