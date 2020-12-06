@@ -7,9 +7,12 @@
 #include <ESPAsyncTCP.h>
 #include <SPI.h>
 #include <FS.h>
+#include <Adafruit_Sensor.h>
+#include <DHT.h>
 
 #define NUM_LEDS 30    
 #define DATA_PIN D6
+#define DHTTYPE DHT11
 CRGB leds[NUM_LEDS];
 CRGB color = CRGB::Red; 
 byte r_val = 0;
@@ -19,6 +22,9 @@ bool dotOn = true;
 byte mode = 0;
 byte temperatureSymbol = 10;
 byte degreeSymbol = 11;
+byte percent = 12;
+int teplotavalue = 20;
+int vlhkostvalue = 20;
 
 //CRGB color = CRGB(r_val, g_val, b_val);
 
@@ -31,15 +37,20 @@ NTPClient timeClient(ntpUDP, "europe.pool.ntp.org");
 
 byte brightness = 100;
 
+DHT dht(D2, DHTTYPE);
+
 String getTime() {
   String time = timeClient.getFormattedTime();
-  Serial.println(time);
+  //Serial.println(time);
   return String(time);
 }
 
 String getTemperature(){
-  int teplota = 5;
-  return String (teplota);
+  return String(teplotavalue);  
+}
+
+String getHumidity(){
+  return String(vlhkostvalue);  
 }
 
 void displayDots(CRGB color) {
@@ -75,6 +86,7 @@ void displayTime(int index, int number) {
     0b01101111, //9   
     0b00111001, //C
     0b01100011, //°
+    0b01011100, //%
   };
   
   color = CRGB(r_val,g_val,b_val);
@@ -106,13 +118,24 @@ void updateClock(){
 
 void updateTemperature(){
 
-  int teplota1 = 1;
-  int teplota2 = 2;
+  int teplota1 = dht.readTemperature() / 10;
+  int teplota2 = dht.readTemperature();
   displayTime(0,temperatureSymbol);
   displayTime(7,degreeSymbol);
-  displayTime(16,teplota2);
+  displayTime(16,teplota2 % 10);
   displayTime(23,teplota1);
-  dotsOff();  
+  dotsOff();
+}
+
+void updateHumidity(){
+
+  int humidity1 = dht.readHumidity() / 10;
+  int humidity2 = dht.readHumidity();
+  displayTime(0,percent);
+  displayTime(7,degreeSymbol);
+  displayTime(16,humidity2 % 10);
+  displayTime(23,humidity1);
+  dotsOff();
 }
 
 void setup() {
@@ -184,11 +207,19 @@ void setup() {
 
   server.on("/teplota", HTTP_GET, [](AsyncWebServerRequest * request){
     request->send_P(200, "text/plain", getTemperature().c_str());
-    //clockMode = 1;
   });
 
-  timeClient.begin();  
-  
+  server.on("/humidity", HTTP_POST, [](AsyncWebServerRequest *request){
+    mode = 2;  
+    request->send(200, "text/json", "{\"result\":\"ok\"}");
+  });
+
+  server.on("/vlhkost", HTTP_GET, [](AsyncWebServerRequest * request){
+    request->send_P(200, "text/plain", getHumidity().c_str());
+  });
+
+  timeClient.begin(); 
+  dht.begin(); 
 
   //GMT +1 (1 * 60 * 60 = 3600)
   timeClient.setTimeOffset(3600);
@@ -203,21 +234,26 @@ void loop() {
   String formattedTime = timeClient.getFormattedTime();
   int hour = timeClient.getHours();
   int minute = timeClient.getMinutes();
-  Serial.print("Cas: ");
+  teplotavalue = dht.readTemperature();
+  vlhkostvalue = dht.readHumidity();
+  /*Serial.print("Cas: ");
   Serial.println(formattedTime);
   Serial.println(hour);
   Serial.println(minute);  
-  Serial.println(mode);
+  Serial.println(mode);*/
   delay(2000);
 
   //updateClock();
 
-  if (mode == 0) {
+  if(mode == 0){
       updateClock();
     } 
-  else if (mode == 1) {
+  else if(mode == 1){
       updateTemperature();
     } 
+  else if(mode == 2){
+    updateHumidity();
+  }
   FastLED.setBrightness(brightness);
   FastLED.show();
 }
