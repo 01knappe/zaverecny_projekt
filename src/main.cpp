@@ -9,13 +9,14 @@
 #include <FS.h>
 #include <Adafruit_Sensor.h>
 #include <DHT.h>
+#include <ESPAsyncWiFiManager.h>
 
 #define NUM_LEDS 30    
 #define DATA_PIN D6
 #define DHTTYPE DHT11
 CRGB leds[NUM_LEDS];
 CRGB color = CRGB::Red; 
-byte r_val = 0;
+byte r_val = 255;
 byte g_val = 0;
 byte b_val = 0;
 bool dotOn = true;
@@ -28,10 +29,8 @@ int vlhkostvalue = 20;
 
 //CRGB color = CRGB(r_val, g_val, b_val);
 
-const char *ssid     = "ssid";
-const char *password = "password";
-
 AsyncWebServer server(80);
+DNSServer dns;
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "europe.pool.ntp.org");
 
@@ -140,13 +139,17 @@ void updateHumidity(){
 
 void setup() {
   Serial.begin(115200);
-  Serial.print("Pripojovani k ");
+  /*Serial.print("Pripojovani k ");
   Serial.println(ssid);
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
-  }
+  }*/
+  AsyncWiFiManager wifiManager(&server,&dns);
+  wifiManager.autoConnect("ClockAP");
+  Serial.println("connected");
+  Serial.println(WiFi.localIP());
 
   if(!SPIFFS.begin()){
     Serial.println("An Error has occurred while mounting SPIFFS");
