@@ -23,9 +23,11 @@ bool dotOn = true;
 byte mode = 0;
 byte temperatureSymbol = 10;
 byte degreeSymbol = 11;
+byte pomlcka = 13;
 byte percent = 12;
 int teplotavalue = 20;
 int vlhkostvalue = 20;
+int error = 2147483647;
 
 //CRGB color = CRGB(r_val, g_val, b_val);
 
@@ -86,6 +88,7 @@ void displayTime(int index, int number) {
     0b00111001, //C
     0b01100011, //°
     0b01011100, //%
+    0b01000000, //-
   };
   
   color = CRGB(r_val,g_val,b_val);
@@ -112,17 +115,23 @@ void updateClock(){
   displayTime(16, hour2);    
   displayTime(23, hour1);
   displayDots(color);
-
 }
 
 void updateTemperature(){
 
   int teplota1 = dht.readTemperature() / 10;
   int teplota2 = dht.readTemperature();
+   if(teplota1 == error || teplota2 == error){
+    displayTime(16,pomlcka);
+    displayTime(23,pomlcka);
+  }
+  else{
+    displayTime(16,teplota2 % 10);
+    displayTime(23,teplota1);
+  }  
   displayTime(0,temperatureSymbol);
   displayTime(7,degreeSymbol);
-  displayTime(16,teplota2 % 10);
-  displayTime(23,teplota1);
+  
   dotsOff();
 }
 
@@ -130,34 +139,21 @@ void updateHumidity(){
 
   int humidity1 = dht.readHumidity() / 10;
   int humidity2 = dht.readHumidity();
+  if(humidity1 == error || humidity2 == error){
+    displayTime(16,pomlcka);
+    displayTime(23,pomlcka);
+  }
+  else{
+    displayTime(16,humidity2 % 10);
+    displayTime(23,humidity1);
+  }
+
   displayTime(0,percent);
   displayTime(7,degreeSymbol);
-  displayTime(16,humidity2 % 10);
-  displayTime(23,humidity1);
   dotsOff();
 }
 
-void setup() {
-  Serial.begin(115200);
-  /*Serial.print("Pripojovani k ");
-  Serial.println(ssid);
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }*/
-  AsyncWiFiManager wifiManager(&server,&dns);
-  wifiManager.autoConnect("ClockAP");
-  Serial.println("connected");
-  Serial.println(WiFi.localIP());
-
-  if(!SPIFFS.begin()){
-    Serial.println("An Error has occurred while mounting SPIFFS");
-    return;
-  } 
-
-  Serial.println(WiFi.localIP());
-
+void HttpRequests(){
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/index.html", String());
   });
@@ -220,9 +216,31 @@ void setup() {
   server.on("/vlhkost", HTTP_GET, [](AsyncWebServerRequest * request){
     request->send_P(200, "text/plain", getHumidity().c_str());
   });
+}
 
+void setup() {
+  Serial.begin(115200);
+  /*Serial.print("Pripojovani k ");
+  Serial.println(ssid);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }*/
+  AsyncWiFiManager wifiManager(&server,&dns);
+  wifiManager.autoConnect("ClockAP");
+  Serial.println("connected");
+  Serial.println(WiFi.localIP());
+
+  if(!SPIFFS.begin()){
+    Serial.println("An Error has occurred while mounting SPIFFS");
+    return;
+  } 
+
+  Serial.println(WiFi.localIP());
   timeClient.begin(); 
   dht.begin(); 
+  HttpRequests();
 
   //GMT +1 (1 * 60 * 60 = 3600)
   timeClient.setTimeOffset(3600);
@@ -242,20 +260,22 @@ void loop() {
   /*Serial.print("Cas: ");
   Serial.println(formattedTime);
   Serial.println(hour);
-  Serial.println(minute);  
-  Serial.println(mode);*/
-  delay(2000);
+  Serial.println(minute); 
+  Serial.println(mode);
+  delay(500);*/
 
   //updateClock();
 
-  if(mode == 0){
+  switch(mode){
+  case 0:
       updateClock();
-    } 
-  else if(mode == 1){
+      break;
+  case 1:
       updateTemperature();
-    } 
-  else if(mode == 2){
-    updateHumidity();
+      break;
+  case 2:
+      updateHumidity();
+      break;
   }
   FastLED.setBrightness(brightness);
   FastLED.show();

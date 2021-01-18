@@ -47,8 +47,10 @@ setInterval(function () {
             if(this.responseText==2147483647){
                 document.getElementById("time").innerHTML = "-- %";
             }
-            document.getElementById("time").innerHTML = this.responseText+" %";
-        }          
+            else{
+                document.getElementById("time").innerHTML = this.responseText+" %";
+            }            
+        }            
       }
     };
     if(mode == 0){
