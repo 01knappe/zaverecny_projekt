@@ -40,20 +40,24 @@ byte brightness = 100;
 
 DHT dht(D2, DHTTYPE);
 
+//funkce pro získání času
 String getTime() {
   String time = timeClient.getFormattedTime();
   //Serial.println(time);
   return String(time);
 }
 
+//funkce pro získání teploty
 String getTemperature(){
   return String(teplotavalue);  
 }
 
+//funkce pro získání vlhkosti vzduchu
 String getHumidity(){
   return String(vlhkostvalue);  
 }
 
+//funkce blikajících teček
 void displayDots(CRGB color) {
   if (dotOn) {
     leds[14] = color;
@@ -67,11 +71,13 @@ void displayDots(CRGB color) {
   dotOn = !dotOn;  
 }
 
+//vypnutí teček na indexu 14, 15
 void dotsOff(){
     leds[14] = CRGB::Black;
     leds[15] = CRGB::Black;
 }
 
+//funkce pro rozsvícení ledek
 void displayTime(int index, int number) {
 
   byte numbers[] = {
@@ -101,6 +107,7 @@ void displayTime(int index, int number) {
   leds[15] = color;*/ 
 }
 
+//funkce pro uložení a výpis času
 void updateClock(){
 
   int hour1 = timeClient.getHours() / 10;
@@ -117,6 +124,7 @@ void updateClock(){
   displayDots(color);
 }
 
+//funkce pro uložení a výpis teploty
 void updateTemperature(){
 
   int teplota1 = dht.readTemperature() / 10;
@@ -135,6 +143,7 @@ void updateTemperature(){
   dotsOff();
 }
 
+//funkce pro uložení a výpis vlhkosti vzduchu
 void updateHumidity(){
 
   int humidity1 = dht.readHumidity() / 10;
@@ -153,6 +162,7 @@ void updateHumidity(){
   dotsOff();
 }
 
+// http requesty
 void HttpRequests(){
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/index.html", String());
@@ -266,6 +276,7 @@ void loop() {
 
   //updateClock();
 
+  //režimy displeje
   switch(mode){
   case 0:
       updateClock();
